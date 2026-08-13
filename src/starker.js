@@ -98,6 +98,9 @@ async function formatarPivot(ctx, pivot){
   const escalaRotulo=escala(PALETA.navy, PALETA.slate, labelCols);          // colunas de rótulo
   const escalaSub   =escala(PALETA.subtotalTop, PALETA.subtotalBot, labelCols); // subtotais por nível
 
+  // 0) LIMPEZA TOTAL — zera qualquer borda herdada (resíduos de versões/formatações anteriores)
+  solidificar(full);
+
   // 1) Base clara
   full.format.fill.color=PALETA.offwhite;
   full.format.font.color=PALETA.graphite;
