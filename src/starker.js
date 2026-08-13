@@ -102,30 +102,25 @@ async function formatarPivot(ctx, pivot){
   full.format.fill.color=PALETA.offwhite;
   full.format.font.color=PALETA.graphite;
 
-  // 2) Colunas de rótulo em escala escura (coluna inteira)
+  // 2) Colunas de rótulo em escala escura (coluna inteira) — sidebar
   for(let c=0;c<labelCols;c++){
     const col=full.getCell(0,c).getResizedRange(nRows-1,0);
     col.format.fill.color=escalaRotulo[c];
     col.format.font.color=PALETA.white;
   }
 
-  // 3) Cabeçalho das colunas de dados
-  const hData=full.getCell(0,labelCols).getResizedRange(headerRows-1, nCols-1-labelCols);
-  hData.format.fill.color=PALETA.navy;
-  hData.format.font.color=PALETA.white;
-  hData.format.font.bold=true;
-  full.getCell(0,0).getResizedRange(headerRows-1, labelCols-1).format.font.bold=true; // rótulos do cabeçalho em negrito
+  // 2b) Corpo do sidebar: 100% SÓLIDO, sem nenhuma linha (nem clara nem escura)
+  solidificar(full.getCell(headerRows,0).getResizedRange(nRows-1-headerRows, labelCols-1));
 
-  // 4) Canto do cabeçalho (rótulos) = sólido, sem linhas claras
-  limparBordasInternas(full.getCell(0,0).getResizedRange(headerRows-1, labelCols-1));
+  // 3) Barra de títulos = cabeçalho inteiro numa cor só (azul-marinho)
+  const header=full.getCell(0,0).getResizedRange(headerRows-1, nCols-1);
+  header.format.fill.color=PALETA.navy;
+  header.format.font.color=PALETA.white;
+  header.format.font.bold=true;
 
-  // 4b) Corpo do sidebar (colunas de rótulo): 100% sólido, SEM linhas claras
-  const sidebarCorpo=full.getCell(headerRows,0).getResizedRange(nRows-1-headerRows, labelCols-1);
-  limparBordasInternas(sidebarCorpo);
-
-  // 5) Barra de títulos (colunas de dados): grade SÓ vertical + linha inferior cobre
-  gradeTitulo(hData);
-  bordaAresta(full.getCell(0,0).getResizedRange(headerRows-1,nCols-1), "EdgeBottom", PALETA.cobre, "Medium");
+  // 4) Barra de títulos: SÓ linhas horizontais claras (sem verticais) + base cobre
+  gradeTitulo(header);
+  bordaAresta(header, "EdgeBottom", PALETA.cobre, "Medium");
 
   // Detecta coluna de Total Geral
   let colTotalGeral=-1;
@@ -261,23 +256,17 @@ function gradeClara(range){
   ["InsideHorizontal","InsideVertical"]
     .forEach(e=>{ const it=b.getItem(e); it.color=PALETA.gridline; it.weight="Thin"; it.style="Continuous"; });
 }
-// Barra de títulos: grade SÓ vertical clara (horizontais não aparecem)
+// Barra de títulos: grade SÓ horizontal clara (verticais não aparecem)
 function gradeTitulo(range){
-  const b=range.format.borders;
-  const v=b.getItem("InsideVertical"); v.color=PALETA.linhaTitulo; v.weight="Thin"; v.style="Continuous";
-  b.getItem("InsideHorizontal").style="None";
-}
-// Colunas de rótulo: SÓ horizontal; vertical removida (não quebra a cor de fundo)
-function gradeSomenteHorizontal(range){
   const b=range.format.borders;
   const h=b.getItem("InsideHorizontal"); h.color=PALETA.linhaTitulo; h.weight="Thin"; h.style="Continuous";
   b.getItem("InsideVertical").style="None";
 }
-// Remove todas as linhas internas (deixa o fundo escuro sólido)
-function limparBordasInternas(range){
+// Deixa a região 100% sólida: remove TODAS as bordas (internas e arestas)
+function solidificar(range){
   const b=range.format.borders;
-  b.getItem("InsideVertical").style="None";
-  b.getItem("InsideHorizontal").style="None";
+  ["InsideHorizontal","InsideVertical","EdgeTop","EdgeBottom","EdgeLeft","EdgeRight"]
+    .forEach(e=>{ b.getItem(e).style="None"; });
 }
 function bordaAresta(range, aresta, cor, peso){
   const it=range.format.borders.getItem(aresta);
