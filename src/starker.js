@@ -119,9 +119,9 @@ async function formatarPivot(ctx, pivot){
   // 4) Canto do cabeçalho (rótulos) = sólido, sem linhas claras
   limparBordasInternas(full.getCell(0,0).getResizedRange(headerRows-1, labelCols-1));
 
-  // 4b) Corpo do sidebar (colunas de rótulo): grade SÓ horizontal (nunca vertical)
+  // 4b) Corpo do sidebar (colunas de rótulo): 100% sólido, SEM linhas claras
   const sidebarCorpo=full.getCell(headerRows,0).getResizedRange(nRows-1-headerRows, labelCols-1);
-  gradeSomenteHorizontal(sidebarCorpo);
+  limparBordasInternas(sidebarCorpo);
 
   // 5) Barra de títulos (colunas de dados): grade SÓ vertical + linha inferior cobre
   gradeTitulo(hData);
