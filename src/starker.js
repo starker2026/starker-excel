@@ -116,11 +116,14 @@ async function formatarPivot(ctx, pivot){
   hData.format.font.bold=true;
   full.getCell(0,0).getResizedRange(headerRows-1, labelCols-1).format.font.bold=true; // rótulos do cabeçalho em negrito
 
-  // 4) Colunas de rótulo: grade SÓ horizontal (vertical removida p/ não quebrar a cor)
-  const blocoRotulo=full.getCell(0,0).getResizedRange(nRows-1, labelCols-1);
-  gradeSomenteHorizontal(blocoRotulo);
+  // 4) Canto do cabeçalho (rótulos) = sólido, sem linhas claras
+  limparBordasInternas(full.getCell(0,0).getResizedRange(headerRows-1, labelCols-1));
 
-  // 5) Barra de títulos (colunas de dados): grade vertical clara + linha inferior cobre
+  // 4b) Corpo do sidebar (colunas de rótulo): grade SÓ horizontal (nunca vertical)
+  const sidebarCorpo=full.getCell(headerRows,0).getResizedRange(nRows-1-headerRows, labelCols-1);
+  gradeSomenteHorizontal(sidebarCorpo);
+
+  // 5) Barra de títulos (colunas de dados): grade SÓ vertical + linha inferior cobre
   gradeTitulo(hData);
   bordaAresta(full.getCell(0,0).getResizedRange(headerRows-1,nCols-1), "EdgeBottom", PALETA.cobre, "Medium");
 
@@ -258,17 +261,23 @@ function gradeClara(range){
   ["InsideHorizontal","InsideVertical"]
     .forEach(e=>{ const it=b.getItem(e); it.color=PALETA.gridline; it.weight="Thin"; it.style="Continuous"; });
 }
-// Barra de títulos: grade vertical + horizontal clara
+// Barra de títulos: grade SÓ vertical clara (horizontais não aparecem)
 function gradeTitulo(range){
   const b=range.format.borders;
   const v=b.getItem("InsideVertical"); v.color=PALETA.linhaTitulo; v.weight="Thin"; v.style="Continuous";
-  const h=b.getItem("InsideHorizontal"); h.color=PALETA.linhaTitulo; h.weight="Thin"; h.style="Continuous";
+  b.getItem("InsideHorizontal").style="None";
 }
 // Colunas de rótulo: SÓ horizontal; vertical removida (não quebra a cor de fundo)
 function gradeSomenteHorizontal(range){
   const b=range.format.borders;
   const h=b.getItem("InsideHorizontal"); h.color=PALETA.linhaTitulo; h.weight="Thin"; h.style="Continuous";
-  const v=b.getItem("InsideVertical"); v.style="None";
+  b.getItem("InsideVertical").style="None";
+}
+// Remove todas as linhas internas (deixa o fundo escuro sólido)
+function limparBordasInternas(range){
+  const b=range.format.borders;
+  b.getItem("InsideVertical").style="None";
+  b.getItem("InsideHorizontal").style="None";
 }
 function bordaAresta(range, aresta, cor, peso){
   const it=range.format.borders.getItem(aresta);
