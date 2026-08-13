@@ -15,8 +15,9 @@ const PALETA = {
   navy:        "#0B202D",
   slate:       "#2B4F63",
   linhaTitulo: "#48627A", // linha horizontal clara da barra de títulos
-  subtotalTop: "#D9B184", // subtotal nível mais alto
-  subtotalBot: "#F1E7D9", // subtotal nível mais baixo
+  subtotalTop: "#E6D3B4", // subtotal nível mais alto (creme, menos laranja)
+  subtotalBot: "#F5EEE2", // subtotal nível mais baixo (creme claro)
+  fonte:       "Arial",   // fonte padrão (igual ao preview)
   cobre:       "#C6793C",
   white:       "#FFFFFF",
   gridline:    "#D8D5CE"  // grade discreta nas áreas claras
@@ -88,9 +89,10 @@ async function formatarPivot(ctx, pivot){
   const escR=escala(PALETA.navy, PALETA.slate, labelCols);
   const escS=escala(PALETA.subtotalTop, PALETA.subtotalBot, labelCols);
 
-  // Base clara
+  // Base clara + fonte padrão
   full.format.fill.color=PALETA.offwhite;
   full.format.font.color=PALETA.graphite;
+  full.format.font.name=PALETA.fonte;
 
   // Sidebar (colunas de rótulo): escala escura + bordas MASCARADAS na cor do fundo
   for(let c=0;c<labelCols;c++){
@@ -164,6 +166,7 @@ async function formatarTabela(ctx, table){
   const headerRange=table.getHeaderRowRange();
   const bodyRange=table.getDataBodyRange();
   bodyRange.load("rowCount, columnCount");
+  table.getRange().format.font.name=PALETA.fonte;
   await ctx.sync();
 
   headerRange.format.fill.color=PALETA.navy;
@@ -201,6 +204,7 @@ async function formatarIntervalo(ctx, range){
   const nr=range.rowCount, ncc=range.columnCount;
   range.format.fill.color=PALETA.offwhite;
   range.format.font.color=PALETA.graphite;
+  range.format.font.name=PALETA.fonte;
 
   const header=range.getRow(0);
   header.format.fill.color=PALETA.navy;
